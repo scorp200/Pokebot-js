@@ -6,7 +6,7 @@ function init(command) {
     var list_options = {
         command: 'pkaddchannel',
         name: 'addchannel',
-        help: '!pkaddchannel add the current channel to whitelist.',
+        help: 'Help: !pkaddchannel #channel | restrict players to the specified channels only',
         help_on_empty: true
     };
     command(list_options, add_channel);

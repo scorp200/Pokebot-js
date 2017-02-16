@@ -26,11 +26,10 @@ module.exports = function(msg, old_options) {
         else
             return settings.channel_list[id];
     }
-    this.get_settings = function(){
-      return settings;
+    this.get_settings = function() {
+        return settings;
     }
-
-    this.get_battles = function(){
-      return battles;
+    this.get_battles = function() {
+        return battles;
     }
 }

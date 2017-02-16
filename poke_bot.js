@@ -56,6 +56,12 @@ function reload_commands() {
         }
         modules[name].init(command);
     });
+    fs.readdirSync('./modules').forEach(function(file) {
+        if (!file.endsWith('.js')) return;
+
+        var name = file.substring(0, file.length - 3);
+        modules[name] = reload('./modules/' + file);
+    });
 }
 
 let score = JSON.parse(fs.readFileSync('./PokeSave.json', 'utf8'));
@@ -82,7 +88,7 @@ bot.on("message", msg => {
         if (text.indexOf(' ') > 0)
             index = text.indexOf(' ');
         var command = text.substring(1, index);
-        commands.emit(command, msg, text, guilds[msg.guild.id], player_stats)
+        commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules)
     }
 });
 

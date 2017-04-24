@@ -30,6 +30,14 @@ function on_allowed_channel_only(func) {
 
 function reload_commands() {
     commands = new EventEmitter();
+    commands.on('pkreload', function(msg) {
+        if (msg.member.user.id == '215928046023213059') {
+            reload_commands();
+            msg.reply('All commands have been reloaded.');
+        } else {
+            msg.reply('Only the developer can reload commands.');
+        }
+    });
     fs.readdirSync('./commands').forEach(function(file) {
         if (!file.endsWith('.js')) return;
 
@@ -88,7 +96,11 @@ bot.on("message", msg => {
         if (text.indexOf(' ') > 0)
             index = text.indexOf(' ');
         var command = text.substring(1, index);
-        commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules)
+        try {
+            commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules);
+        } catch (errormsg) {
+            console.log(errormsg);
+        }
     }
 });
 

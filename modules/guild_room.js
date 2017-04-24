@@ -32,4 +32,12 @@ module.exports = function(msg, old_options) {
     this.get_battles = function() {
         return battles;
     }
+    this.get_player_battle = function(pid) {
+        for (var bid in battles) {
+            var b = battles[bid];
+            if (b.players[pid])
+                return bid;
+        }
+        return false;
+    }
 }

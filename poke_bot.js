@@ -7,6 +7,7 @@ var configs = {};
 var modules = {};
 var player_stats = {};
 var commands;
+var precommands = {};
 var guilds = {};
 var help_list = {};
 
@@ -30,12 +31,19 @@ function on_allowed_channel_only(func) {
 
 function reload_commands() {
     commands = new EventEmitter();
+    precommands = {};
     commands.on('pkreload', function(msg) {
         if (msg.member.user.id == '215928046023213059') {
             reload_commands();
             msg.reply('All commands have been reloaded.');
         } else {
             msg.reply('Only the developer can reload commands.');
+        }
+    });
+    commands.on('pre', function() {
+        var keys = Object.keys(precommands)
+        for (var x = 0; x < keys.length; x++) {
+            precommands[keys[x]].apply(this, arguments);
         }
     });
     fs.readdirSync('./commands').forEach(function(file) {
@@ -45,7 +53,7 @@ function reload_commands() {
         modules[name] = reload('./commands/' + file);
 
         function command(options, func) {
-            if (commands.listenerCount(options.name.toLowerCase()) > 0)
+            if (commands.listenerCount(options.command.toLowerCase()) > 0)
                 throw new Error('Command with such name already exist.');
             if (options.help_on_empty)
                 func = help_on_empty(func);
@@ -59,8 +67,10 @@ function reload_commands() {
                     msg.reply('```' + options.help + '```');
                 }
             }
-
-            commands.on(options.command.toLowerCase(), f);
+            if (options.pre_command)
+                precommands[options.command.toLowerCase()] = f;
+            else
+                commands.on(options.command.toLowerCase(), f);
         }
         modules[name].init(command);
     });
@@ -90,18 +100,25 @@ bot.on("message", msg => {
         var guild = reload('./modules/guild_room.js')
         guilds[msg.guild.id] = new guild(msg);
     }
-
+    if (msg.author.bot)
+        return;
+    try {
+        commands.emit('pre', msg, text, guilds[msg.guild.id], player_stats, modules, commands);
+    } catch (errormsg) {
+        console.log(errormsg);
+    }
     if (text[0] == '!') {
         var index = text.length;
         if (text.indexOf(' ') > 0)
             index = text.indexOf(' ');
         var command = text.substring(1, index);
         try {
-            commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules);
+            commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules, commands);
         } catch (errormsg) {
             console.log(errormsg);
         }
     }
+
 });
 
 bot.login(token);

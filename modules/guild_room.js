@@ -16,7 +16,9 @@ module.exports = function(msg, old_options) {
             },
             crit_rate: 0.3,
             channel_list: {},
-            id: msg.guild.id
+            restrict: false,
+            id: msg.guild.id,
+            bid: 0
         };
     console.log("guild:" + settings.id + " has been created.")
 
@@ -24,7 +26,7 @@ module.exports = function(msg, old_options) {
         if (Object.keys(settings.channel_list).length == 0)
             return true;
         else
-            return settings.channel_list[id];
+            return settings.channel_list[id] != undefined;
     }
     this.get_settings = function() {
         return settings;

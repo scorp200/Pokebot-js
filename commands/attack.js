@@ -20,10 +20,16 @@ function attack(msg, text, guild_room, player_stats, modules) {
         var damage_mult = modules['utils'].get_damage_mult(type, player.type);
         var damage = Math.floor(modules['utils'].get_random_range(battle.damage_range.min, battle.damage_range.max) * damage_mult * crit_mult);
         player.health -= damage;
-        if (crit_mult == 2)
+        if (damage_mult == 0) {
+            msg.channel.sendCode('', player.poke_name + " tried to use " + attack_name + " but failed.");
+            return;
+        }
+        if (damage_mult != 0.5 && crit_mult == 2)
             msg.channel.sendCode('cpp', 'A critical hit!');
-        msg.channel.sendCode('cpp', guild_room.get_battles()[bid].players[pid].poke_name + ' used ' + attack_name + ' type ' + type);
+        msg.channel.sendCode('', guild_room.get_battles()[bid].players[pid].poke_name + ' used ' + attack_name + ' type ' + type);
         msg.channel.sendCode('cpp', player.poke_name + ' took ' + damage + ' and has ' + player.health + ' health remaining.');
+        if (crit_mult == 1 && damage_mult == 0.5)
+            msg.channel.sendCode('', "But it wasn't very effective.");
     }
     var pid = msg.member.user.id;
     var bid = guild_room.get_player_battle(pid);

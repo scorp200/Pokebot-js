@@ -27,13 +27,12 @@ function challenge(msg, text, guild_room, player_stats, modules) {
         if (b.players[pid1]) {
             msg.reply('```You are already in a battle!```');
             return;
-        }
-        if (b.players[pid2]) {
+        } else if (b.players[pid2]) {
             msg.reply('```They are already in a battle!```');
             return;
         }
     }
-
+    var settings = guild_room.get_settings()
     var p1 = new modules['player'](pid1, undefined, modules['utils'].get_random_range(guild_room.get_settings().hp_range.min, guild_room.get_settings().hp_range.max), modules['utils'].get_random_type());
     var p2 = new modules['player'](pid2, undefined, modules['utils'].get_random_range(guild_room.get_settings().hp_range.min, guild_room.get_settings().hp_range.max), modules['utils'].get_random_type());
     var players = {};
@@ -41,10 +40,10 @@ function challenge(msg, text, guild_room, player_stats, modules) {
     players[pid2] = p2;
     var bid = p1.id + '' + p2.id;
     guild_room.get_battles()[bid] = new modules['battle'](bid, msg.channel, players, {
-        min: guild_room.get_settings().damage_range.min,
-        max: guild_room.get_settings().damage_range.max
-    }, guild_room.get_settings().crit_rate);
+        min: settings.damage_range.min,
+        max: settings.damage_range.max
+    }, settings.crit_rate);
     guild_room.get_battles()[bid].state = 1;
-    console.log("Room:" + guild_room.get_settings().id + " Challenge: " + pid1 + " vs " + pid2 + " id: " + bid);
+    console.log("Room:" + settings.id + " Challenge: " + pid1 + " vs " + pid2 + " id: " + bid);
     msg.channel.sendMessage('<@' + pid1 + '> challenged <@' + pid2 + '>');
 }

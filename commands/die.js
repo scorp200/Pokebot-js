@@ -12,7 +12,7 @@ function init(command) {
     command(list_options, die);
 }
 
-function die(msg, text, guild_room, player_stats, modules) {
+function die(msg) {
     msg.channel.sendMessage("Goodbye cruel world.");
     process.exit(1);
 }

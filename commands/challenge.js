@@ -13,15 +13,13 @@ function init(command) {
     command(list_options, challenge);
 }
 
-function challenge(msg, text, guild_room, player_stats, modules) {
+function challenge(msg, text, guild_room, player_stats, modules, commands, db) {
     if (!msg.mentions.users.first()) {
         msg.reply('``` Invalid player ```');
         return;
     }
-
     var pid1 = msg.member.user.id;
     var pid2 = msg.mentions.users.first().id;
-
     for (var bid in guild_room.get_battles()) {
         var b = guild_room.get_battles()[bid];
         if (b.players[pid1]) {

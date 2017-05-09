@@ -98,12 +98,12 @@ bot.on("message", msg => {
     var text = msg.content.toLowerCase().trim();
     if (!guilds[msg.guild.id]) {
         var guild = reload('./modules/guild_room.js')
-        guilds[msg.guild.id] = new guild(msg);
+        guilds[msg.guild.id] = new guild(msg, db);
     }
     if (msg.author.bot)
         return;
     try {
-        commands.emit('pre', msg, text, guilds[msg.guild.id], player_stats, modules, commands);
+        commands.emit('pre', msg, text, guilds[msg.guild.id], player_stats, modules, commands, db);
     } catch (errormsg) {
         console.log(errormsg);
     }
@@ -113,7 +113,7 @@ bot.on("message", msg => {
             index = text.indexOf(' ');
         var command = text.substring(1, index);
         try {
-            commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules, commands);
+            commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules, commands, db);
         } catch (errormsg) {
             console.log(errormsg);
         }

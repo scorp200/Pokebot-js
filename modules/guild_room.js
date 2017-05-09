@@ -1,4 +1,4 @@
-module.exports = function(msg, old_options) {
+module.exports = function(msg, db, old_options) {
     var battles = {};
     var settings = {};
 
@@ -20,8 +20,7 @@ module.exports = function(msg, old_options) {
             id: msg.guild.id,
             bid: 0
         };
-    console.log("guild:" + settings.id + " has been created.")
-
+    console.log("guild:" + settings.id + " has been created.");
     this.channel_allowed = function(id) {
         if (Object.keys(settings.channel_list).length == 0)
             return true;

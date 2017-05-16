@@ -46,25 +46,27 @@ function remove_messages(msg, text, guild_room, player_stats, modules, commands)
     }
 }
 
-function add_channel(msg, text, guild_room) {
+function add_channel(msg, text, guild_room, player_stats, modules, commands, db) {
 
     msg.mentions.channels.array().forEach(function(channel) {
         guild_room.get_settings().channel_list[channel.id] = true;
         console.log('Guild:' + guild_room.get_settings().id + ' added channel:' + channel.id + ' to the whitelist');
     });
+    var list = JSON.stringify(guild_room.get_settings().channel_list);
+    db.run('UPDATE Guilds SET CHANNEL_LIST =\'' + list + '\' WHERE ID ="' + guild_room.get_settings().id + '"');
     msg.reply("```this channel has been added to the whitelist.```")
 }
 
-function toggle_restrict(msg, text, guild_room) {
+function toggle_restrict(msg, text, guild_room, player_stats, modules, commands, db) {
     var settings = guild_room.get_settings();
     if (settings.restrict) {
         settings.restrict = false;
         msg.reply("```message restriction was turned off.```")
-        return;
     }
     if (!settings.restrict) {
         settings.restrict = true;
         msg.reply("```message restriction was turned on.```")
-        return;
     }
+    var list = (settings.restrict) ? 1 : 0;
+    db.run('UPDATE Guilds SET RESTRICTED =' + list + ' WHERE ID ="' + settings.id + '"');
 }

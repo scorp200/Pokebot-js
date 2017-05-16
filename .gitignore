@@ -1,4 +1,4 @@
 *.json
 run.cmd
 old/
-pkdb
+*.sqlite

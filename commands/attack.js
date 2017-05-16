@@ -11,14 +11,26 @@ function init(command) {
         on_allowed_channel_only: true
     };
     command(list_options, attack);
+    var list_options = {
+        command: 'pkuse',
+        name: 'use',
+        help: 'Help: !pkuse name | use an attack with specified name.',
+        help_on_empty: true,
+        on_allowed_channel_only: true
+    };
+    command(list_options, attack);
 }
 
 function attack(msg, text, guild_room, player_stats, modules) {
+    function win(p1, p2) {
+        msg.channel.sendMessage('<@' + pid + '> has won.');
+    }
+
     function damage(player, damage_range, battle) {
         var type = modules['utils'].get_random_type();
         var crit_mult = ((Math.random() < battle.crit_rate)) ? 2 : 1;
         var damage_mult = modules['utils'].get_damage_mult(type, player.type);
-        var damage = Math.floor(modules['utils'].get_random_range(battle.damage_range.min, battle.damage_range.max) * damage_mult * crit_mult);
+        var damage = Math.floor(modules['utils'].get_random_range(battle.damage_range.MIN, battle.damage_range.MAX) * damage_mult * crit_mult);
         player.health -= damage;
         if (damage_mult == 0) {
             msg.channel.sendCode('', player.poke_name + " tried to use " + attack_name + " but failed.");
@@ -26,13 +38,16 @@ function attack(msg, text, guild_room, player_stats, modules) {
         }
         if (damage_mult != 0.5 && crit_mult == 2)
             msg.channel.sendCode('cpp', 'A critical hit!');
-        msg.channel.sendCode('', guild_room.get_battles()[bid].players[pid].poke_name + ' used ' + attack_name + ' type ' + type);
+        msg.channel.sendCode('', player1.poke_name + ' used ' + attack_name + ' type ' + type);
         msg.channel.sendCode('cpp', player.poke_name + ' took ' + damage + ' and has ' + player.health + ' health remaining.');
         if (crit_mult == 1 && damage_mult == 0.5)
             msg.channel.sendCode('', "But it wasn't very effective.");
+        if (player.health <= 0)
+            win(player1, player);
     }
     var pid = msg.member.user.id;
     var bid = guild_room.get_player_battle(pid);
+    var player1 = guild_room.get_battles()[bid].players[pid];
     if (!bid || guild_room.get_battles()[bid].state != 2)
         return;
     var index = msg.content.indexOf(' ');

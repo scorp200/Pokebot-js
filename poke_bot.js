@@ -2,7 +2,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const EventEmitter = require('events');
 const reload = require('require-reload')(require);
-
+const sqlite3 = require('sqlite3').verbose();
 var configs = {};
 var modules = {};
 var player_stats = {};
@@ -10,6 +10,7 @@ var commands;
 var precommands = {};
 var guilds = {};
 var help_list = {};
+var db = new sqlite3.Database('db.sqlite');
 
 function help_on_empty(func) {
     return function(msg, text, guild_room) {
@@ -35,6 +36,7 @@ function reload_commands() {
     commands.on('pkreload', function(msg) {
         if (msg.member.user.id == '215928046023213059') {
             reload_commands();
+            console.log('All commands have been reloaded.');
             msg.reply('All commands have been reloaded.');
         } else {
             msg.reply('Only the developer can reload commands.');
@@ -98,6 +100,16 @@ bot.on("message", msg => {
     var text = msg.content.toLowerCase().trim();
     if (!guilds[msg.guild.id]) {
         var guild = reload('./modules/guild_room.js')
+        var dmg = {
+            MIN: 5,
+            MAX: 25
+        };
+        var ch = {};
+        try {
+            db.run('INSERT OR IGNORE INTO Guilds (ID, HP_RANGE, DMG_RANGE, CRIT, RESTRICTED, CHANNEL_LIST, MOD_LIST) VALUES ("' + msg.guild.id + '",' + '\'{"MIN":"100","MAX":"200"}\'' + ',' + '\'{"MIN":"5","MAX":"25"}\'' + ',' + 0.3 + ',' + 0 + ',\'{}\',\'{}\')');
+        } catch (errormsg) {
+            console.log(errormsg);
+        }
         guilds[msg.guild.id] = new guild(msg, db);
     }
     if (msg.author.bot)

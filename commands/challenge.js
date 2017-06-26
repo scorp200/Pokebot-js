@@ -31,8 +31,8 @@ function challenge(msg, text, guild_room, player_stats, modules, commands, db) {
         }
     }
     var settings = guild_room.get_settings()
-    var p1 = new modules['player'](pid1, undefined, modules['utils'].get_random_range(guild_room.get_settings().hp_range.MIN, guild_room.get_settings().hp_range.MAX), modules['utils'].get_random_type());
-    var p2 = new modules['player'](pid2, undefined, modules['utils'].get_random_range(guild_room.get_settings().hp_range.MIN, guild_room.get_settings().hp_range.MAX), modules['utils'].get_random_type());
+    var p1 = new modules['player'](pid1, undefined, modules['utils'].get_random_range(settings.hp_range.MIN, settings.hp_range.MAX), modules['utils'].get_random_type());
+    var p2 = new modules['player'](pid2, undefined, modules['utils'].get_random_range(settings.hp_range.MIN, settings.hp_range.MAX), modules['utils'].get_random_type());
     var players = {};
     players[pid1] = p1;
     players[pid2] = p2;

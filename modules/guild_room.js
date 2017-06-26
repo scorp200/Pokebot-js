@@ -1,38 +1,41 @@
-module.exports = function(msg, db) {
+module.exports = function(id, db) {
     var battles = {};
     var settings = undefined;
-    db.each('SELECT * FROM Guilds WHERE ID="' + msg.guild.id + '"', function(err, row) {
+    db.each('SELECT * FROM Guilds WHERE ID="' + id + '"', function(err, row) {
         settings = {
             hp_range: JSON.parse(row.HP_RANGE),
             damage_range: JSON.parse(row.DMG_RANGE),
             crit_rate: row.CRIT,
             channel_list: JSON.parse(row.CHANNEL_LIST),
             restrict: row.RESTRICTED == 1 ? true : false,
-            id: msg.guild.id,
+            id: id,
             bid: 0,
             mod_list: JSON.parse(row.MOD_LIST)
         };
-        console.log('Guild:' + msg.guild.id + ' has loaded settings succesfully');
-    });
-    if (!settings){
-        settings = {
-            hp_range: {
-                max: 200,
-                min: 100
-            },
-            damage_range: {
-                min: 5,
-                max: 25
-            },
-            crit_rate: 0.3,
-            channel_list: {},
-            restrict: false,
-            id: msg.guild.id,
-            bid: 0,
-            mod_list: {}
-        };
-      }
-    console.log("guild:" + settings.id + " has been created");
+        console.log('Guild:' + id + ' has loaded settings succesfully');
+    }, OnLoad);
+
+    function OnLoad() {
+        if (!settings) {
+            settings = {
+                hp_range: {
+                    MIN: 200,
+                    MAX: 100
+                },
+                damage_range: {
+                    MIN: 5,
+                    MAX: 25
+                },
+                crit_rate: 0.3,
+                channel_list: {},
+                restrict: false,
+                id: id,
+                bid: 0,
+                mod_list: {}
+            };
+            console.log('Guild:' + id + ' settings has been set to default.');
+        }
+    }
     this.channel_allowed = function(id) {
         if (!settings.channel_list)
             return false;
@@ -42,7 +45,7 @@ module.exports = function(msg, db) {
             return settings.channel_list[id] != undefined;
     }
     this.isMod = function(id) {
-        if (!settings.mod_list)//CHANGE TO CHECK FOR PERMISSION
+        if (!settings.mod_list) //CHANGE TO CHECK FOR PERMISSION
             return false;
         if (Object.keys(settings.channel_list).length == 0)
             return true;

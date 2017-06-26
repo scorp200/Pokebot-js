@@ -23,7 +23,11 @@ function init(command) {
 
 function attack(msg, text, guild_room, player_stats, modules) {
     function win(p1, p2) {
-        msg.channel.sendMessage('<@' + pid + '> has won.');
+        msg.channel.sendMessage('<@' + p1.id + '> has won.');
+        db.serialize(function {
+            db.run('UPDATE Guilds SET DMG_RANGE =\'' + list + '\' WHERE ID ="' + guild_room.get_settings().id + '"');
+        });
+
     }
 
     function damage(player, damage_range, battle) {

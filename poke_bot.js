@@ -10,8 +10,9 @@ var commands;
 var precommands = {};
 var guilds = {};
 var help_list = {};
+var guildsLoaded = false;
 var db = new sqlite3.Database('db.sqlite');
-
+var guild;
 function help_on_empty(func) {
     return function(msg, text, guild_room) {
         if (text.indexOf(' ') == -1) {
@@ -93,27 +94,34 @@ var bot = new Discord.Client({
 
 bot.on('ready', () => {
     reload_commands();
-    console.log("poke_bot is ready");
+    guild = reload('./modules/guild_room.js')
+    db.each('SELECT * FROM Guilds', function(err, row) {
+        guilds[row.ID] = new guild(row.ID, db);
+        console.log('Guild:' + row.ID + ' has been loaded');
+    }, function() {
+        guildsLoaded = true;
+        console.log("poke_bot is ready");
+    });
+
 });
 
 bot.on("message", msg => {
     var text = msg.content.toLowerCase().trim();
     if (!guilds[msg.guild.id]) {
-        var guild = reload('./modules/guild_room.js')
-        var dmg = {
-            MIN: 5,
-            MAX: 25
-        };
-        var ch = {};
         try {
             db.run('INSERT OR IGNORE INTO Guilds (ID, HP_RANGE, DMG_RANGE, CRIT, RESTRICTED, CHANNEL_LIST, MOD_LIST) VALUES ("' + msg.guild.id + '",' + '\'{"MIN":"100","MAX":"200"}\'' + ',' + '\'{"MIN":"5","MAX":"25"}\'' + ',' + 0.3 + ',' + 0 + ',\'{}\',\'{}\')');
         } catch (errormsg) {
             console.log(errormsg);
         }
-        guilds[msg.guild.id] = new guild(msg, db);
+        guilds[msg.guild.id] = new guild(msg.guild.id, db);
+        console.log("guild:" + msg.guild.id + " has been created");
     }
     if (msg.author.bot)
         return;
+    if (!guildsLoaded) {
+        msg.reply('The bot is still loading.');
+        return;
+    }
     try {
         commands.emit('pre', msg, text, guilds[msg.guild.id], player_stats, modules, commands, db);
     } catch (errormsg) {

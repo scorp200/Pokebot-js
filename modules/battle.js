@@ -19,11 +19,11 @@ var Battle = (function() {
 				return
 			}
 			var damage = Math.floor(Utils.get_random_range(damage_range.min, damage_range.max) * damage_mult);
-			p2.health -= damage;
+			p2.hp -= damage;
 			var message = '';
 			if (damage_mult == 2)
 				message = 'A critical Hit!\n';
-			message += p1.poke_name + ' used ' + name + ' type ' + type + '\n' + p2.poke_name + ' took ' + damage + ' and has ' + p1.hp + ' hp remaining.';
+			message += p1.poke_name + ' used ' + name + ' type ' + type + '\n' + p2.poke_name + ' took ' + damage + ' damage and has ' + p2.hp + ' hp remaining.';
 			if (damage_mult == 0.5)
 				message += "\n But it wasn't very effective";
 			else if (damage_mult == 4)
@@ -37,8 +37,8 @@ var Battle = (function() {
 				return;
 			players[p_id].poke_name = name;
 			var done = true;
-			for (var p_id in players) {
-				if (!players[p_id].poke_name)
+			for (var key in players) {
+				if (!players[key].poke_name)
 					done = false;
 			}
 			if (done)

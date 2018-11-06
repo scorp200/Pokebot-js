@@ -13,7 +13,7 @@ var help_list = {};
 var guildsLoaded = false;
 var db = new PouchDB('data');
 var guild;
-var prefix = 'pk!';
+var prefix = 'p!';
 
 function help_on_empty(func) {
 	return function(msg, text, guild_room) {

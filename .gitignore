@@ -1,4 +1,5 @@
 *.json
 run.cmd
 old/
+data/
 *.sqlite

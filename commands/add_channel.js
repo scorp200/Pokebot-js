@@ -28,7 +28,7 @@ function init(command) {
 }
 
 function remove_messages(msg, text, guild_room, player_stats, modules, commands) {
-    var settings = guild_room.get_settings();
+    var settings = guild_room.settings;
     if (msg.author.bot || !settings.channel_list[msg.channel.id])
         return;
     if (settings.restrict) {
@@ -49,16 +49,16 @@ function remove_messages(msg, text, guild_room, player_stats, modules, commands)
 function add_channel(msg, text, guild_room, player_stats, modules, commands, db) {
 
     msg.mentions.channels.array().forEach(function(channel) {
-        guild_room.get_settings().channel_list[channel.id] = true;
-        console.log('Guild:' + guild_room.get_settings().id + ' added channel:' + channel.id + ' to the whitelist');
+        guild_room.settings.channel_list[channel.id] = true;
+        console.log('Guild:' + guild_room.settings.id + ' added channel:' + channel.id + ' to the whitelist');
     });
-    var list = JSON.stringify(guild_room.get_settings().channel_list);
-    db.run('UPDATE Guilds SET CHANNEL_LIST =\'' + list + '\' WHERE ID ="' + guild_room.get_settings().id + '"');
+    var list = JSON.stringify(guild_room.settings.channel_list);
+    db.run('UPDATE Guilds SET CHANNEL_LIST =\'' + list + '\' WHERE ID ="' + guild_room.settings.id + '"');
     msg.reply("```this channel has been added to the whitelist.```")
 }
 
 function toggle_restrict(msg, text, guild_room, player_stats, modules, commands, db) {
-    var settings = guild_room.get_settings();
+    var settings = guild_room.settings;
     if (settings.restrict) {
         settings.restrict = false;
         msg.reply("```message restriction was turned off.```")

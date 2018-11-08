@@ -11,7 +11,7 @@ var precommands = {};
 var guilds = {};
 var help_list = {};
 var guildsLoaded = false;
-var db = new PouchDB('data');
+global.db = new PouchDB('data');
 var guild;
 var prefix = 'p!';
 
@@ -127,7 +127,7 @@ bot.on("message", msg => {
 		console.log("guild:" + msg.guild.id + " has been created");
 	}
 	try {
-		commands.emit('pre', msg, text, guilds[msg.guild.id], player_stats, modules, commands, db);
+		commands.emit('pre', msg, text, guilds[msg.guild.id], player_stats, modules, commands);
 	} catch (errormsg) {
 		console.log(errormsg);
 	}
@@ -137,7 +137,7 @@ bot.on("message", msg => {
 			index = text.indexOf(' ');
 		var command = text.substring(prefix.length, index);
 		try {
-			commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules, commands, db);
+			commands.emit(command, msg, text, guilds[msg.guild.id], player_stats, modules, commands);
 		} catch (errormsg) {
 			console.log(errormsg);
 		}

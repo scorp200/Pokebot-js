@@ -1,5 +1,5 @@
 var Battle = (function() {
-	function create(id, channel, turn, players, damage_range, crit_rate) {
+	function create(id, guild_room, channel, turn, players, damage_range, crit_rate) {
 		var state = 1;
 
 		function attack(p1_id, name) {
@@ -23,13 +23,38 @@ var Battle = (function() {
 			var message = '';
 			if (damage_mult == 2)
 				message = 'A critical Hit!\n';
-			message += p1.poke_name + ' used ' + name + ' type ' + type + '\n' + p2.poke_name + ' took ' + damage + ' damage and has ' + p2.hp + ' hp remaining.';
+			message += p1.poke_name + ' used ' + name + ' type ' + type + '\n\n' + p2.poke_name + ' took ' + damage + ' damage and has ' + p2.hp + ' hp remaining.';
 			if (damage_mult == 0.5)
-				message += "\n But it wasn't very effective";
+				message += "\nBut it wasn't very effective";
 			else if (damage_mult == 4)
-				message += "\n It's super effective!";
+				message += "\nIt's super effective!";
 			channel.send(message, { code: 'ml' });
+			if (p2.hp <= 0) {
+				win(p1, p2);
+			}
 			turn = p2_id;
+		}
+
+		function win(p1, p2) {
+			channel.send(p2.poke_name + ' has fainted.\n' + p1.name + ' and ' + p1.poke_name + ' have won!');
+			guild_room.battles[id] = void 0;
+			for (var key in players) {
+				guild_room.players[key] = void 0;
+			}
+			db.get('players').then(function(doc) {
+				var p = doc.players;
+				var exists
+				if (p.find(function(val, i) {
+						if (val.id == p1.id)
+							val.wins++;
+						else if (val.id == p2.id)
+							val.loses++;
+					}) === undefined) {
+
+				}
+			}).catch(function(e) {
+				db.put({ _id: 'players', players: [] }).catch(function(e) { console.log(e); });
+			});
 		}
 
 		function setName(p_id, name) {
